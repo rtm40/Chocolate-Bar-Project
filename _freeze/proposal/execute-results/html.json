@@ -1,0 +1,14 @@
+{
+  "hash": "08cdc6d6d8c35f1ffcd343436aafd8f1",
+  "result": {
+    "markdown": "---\ntitle: \"Project title\"\nsubtitle: \"Proposal\"\nformat: html\neditor: visual\n---\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(tidyverse)\n```\n:::\n\n\n# Dataset\n\nA brief description of your dataset including its provenance, dimensions, etc. as well as the reason why you chose this dataset.\n\nMake sure to load the data and use inline code for some of this information.\n\n# Questions\n\nThe two questions you want to answer.\n\n# Analysis plan\n\nA plan for answering each of the questions including the variables involved, variables to be created (if any), external data to be merged in (if any).",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

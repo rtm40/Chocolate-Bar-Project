@@ -1,0 +1,46 @@
+---
+title: "Chocolate Bar Rating Analysis"
+subtitle: "Proposal"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: load-pkgs
+#| message: false
+#| warning: false
+#| echo: false
+
+library(tidyverse)
+```
+
+```{r}
+#| label: load-data
+#| message: false
+#| echo: false
+
+chocolate <- readr::read_csv("data/chocolate.csv")
+```
+
+## Dataset
+
+The Chocolate Bar Ratings data set comes from the "Flavors of Cacao" database by way of Georgios and Kelsey, two contributors to the TidyTuesday repository. The data set contains `r count(chocolate)` observations of `r ncol(chocolate)` variables that describe different attributes of chocolate bars. Some are categorical variables, such as ingredients, country of bean origin, and memorable characteristics of the chocolate, while others are numeric, such as cocoa percentage, rating, and review date. The creators rate chocolate bars on a scale from 1.0 to 5.0 by a combination of both objective and subjective factors.
+
+The Chocolate Bar Ratings data set comes from the ["Flavors of Cacao" database](http://flavorsofcacao.com/chocolate_database.html) by way of Georgios and Kelsey, two contributors to the TidyTuesday repository. It can be found [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2022/2022-01-18). The data set contains `r nrow(chocolate)` observations of `r ncol(chocolate)` variables that describe different attributes of chocolate bars. Some are categorical variables, such as ingredients, country of bean origin, and memorable characteristics of the chocolate, while others are numeric, such as cocoa percentage, rating, and review date. The creators rate chocolate bars on a scale from 1.0 to 5.0 by a combination of both objective and subjective factors.
+
+We selected this dataset because our group identified a common interest in chocolate, and specifically wanted to know more about what factors contribute to the overall quality of a chocolate bar. This dataset provides a great opportunity to examine the cocoa percentage, country of origin, manufacturer, ingredients, and characteristics to ultimately identify how some of these traits affect chocolate bar ratings.
+
+## Questions
+
+1.  How are chocolate ratings for bars originating from different countries impacted by factors like time and cocoa percentage?
+2.  How has the count and type of ingredients in chocolate bars affected their ratings over time?
+
+## Analysis plan
+
+### Question 1
+
+To answer "How are chocolate ratings for bars originating from different countries impacted by factors like time and cocoa percentage?", we will first need to visualize the relationship between `rating` and `country_of_bean_origin` over time. Since there are many distinct `country_of_bean_origin` values in the dataset, we will not be able to fully visualize the relationship for each country. To choose the countries we wanted to analyze, we referenced statistics from the [International Cocoa Organization](https://scioteca.caf.com/bitstream/handle/123456789/892/3.%20Propuesta%20de%20valor%20ILAC-%20Ing.pdf?sequence=17&isAllowed=y) in 2015. As publicized by the Development Bank of Latin America, 81% of the market share for fine aroma cocoa is owned by Latin America, with the top four countries of production being Ecuador, Dominican Republic, Peru, and Venezuela. We will use these four countries to answer our question. Once we have our countries, we will manipulate our dataset so that we have an average chocolate bar rating for each year for each country of analysis. We will then use a `geom_line` with year on the x-axis and average rating on the y-axis, with separate lines for each country of analysis. Our second visualization will introduce `cocoa_percent`, examining its relationship with `rating` for each country of analysis. We will create a chart using `geom_col` comparing average chocolate ratings for each country across two groups of cocoa percentage: less than or equal to 70% and greater than 70%. We chose these groupings as a cocoa percentage of 70% is [often considered](https://greatist.com/eat/chocolate-percentage-differences-explained) an important marker for chocolate, many times [the indicator](https://en.wikipedia.org/wiki/Types_of_chocolate) on whether it is classified as light or dark.
+
+### Question 2
+
+To answer "How has the count and type of ingredients in chocolate bars affected their ratings over time?", we will first need to create new dummy variables indicating whether each chocolate bar contains each of the seven listed ingredients in the data set. These will be binary variables, with cells containing "1" if the bar has the ingredient and "0" otherwise. Our first visualization will examine the distributions of chocolate bar rating for each possible amount of ingredients, ranging from 1 to 7. We will do this by creating a ridge plot using `geom_density_ridges`, with possible numbers of ingredients on the y-axis and rating on the x-axis. We are also interested in seeing if the distribution of ratings is different for chocolates with artificial sweeteners, so our ridge plot will also compare the distribution for the overall dataset with the distribution for bars containing sweeteners other than natural sugars. Our second visualization will visualize the relationship between `rating` and time (`review_date`) for each ingredient. We will experiment with different plot formats to see what is the most informative visualization (for example, some options would be creating separate plots for each ingredient or keeping them all on the same plot.) We will manipulate our dataset so that we have an average chocolate bar rating for each year for each ingredient. We plan on using the `geom_line` function in ggplot to achieve the appropriate display, with year on the x-axis and average rating on the y-axis.

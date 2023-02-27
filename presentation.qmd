@@ -1,0 +1,503 @@
+---
+title: "What makes a good chocolate bar?"
+subtitle: "STA/ISS 313 - Spring 2023 - Project 1"
+author: "The Blue Team: Ryan Mitchell, Luke Thomas, Jason Yang"
+title-slide-attributes:
+  data-background-image: images/chocolate_bg.jpg
+  data-background-size: stretch
+  data-slide-number: none
+  
+format:
+  revealjs:
+    theme: beige
+editor: visual
+execute:
+  echo: false
+---
+
+```{r}
+#| label: load-packages
+#| include: false
+
+# Add any additional packages you need to this chunk
+# Remove any packages from this list that you're not using
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(gt)
+library(patchwork)
+library(ggridges)
+```
+
+```{r}
+#| label: setup
+#| include: false
+
+# For better figure resolution
+knitr::opts_chunk$set(
+  fig.retina = 3, 
+  dpi = 300, 
+  fig.width = 6, 
+  fig.asp = 0.618, 
+  out.width = "70%"
+  )
+```
+
+```{r}
+#| label: load-data
+#| include: false
+
+# Load your data here
+chocolate <- readr::read_csv("data/chocolate.csv")
+color_scheme <- c("#A78B71", "#D4AF37", "#EC9704", "#9C4A1A")
+```
+
+# Where is the best chocolate produced? {style="text-align: center"}
+
+## Impact of *Time* {style="text-align: center; color: brown"}
+
+```{r q1-slide1}
+q1_viz1 <- chocolate |>
+  filter(country_of_bean_origin %in%
+           c("Ecuador", "Dominican Republic", "Peru", "Venezuela")) |>
+  group_by(country_of_bean_origin, review_date) |>
+  mutate(avg_rating = mean(rating)) |>
+  select(country_of_bean_origin, review_date, avg_rating) |>
+  ungroup() |>
+  distinct()
+
+meds_DR <- q1_viz1 |>
+  filter(country_of_bean_origin == "Dominican Republic")
+
+meds_EC <- q1_viz1 |>
+  filter(country_of_bean_origin == "Ecuador")
+
+meds_PE <- q1_viz1 |>
+  filter(country_of_bean_origin == "Peru")
+
+meds_VE <- q1_viz1 |>
+  filter(country_of_bean_origin == "Venezuela")
+
+q1_DR <- ggplot(q1_viz1,
+                aes(x = review_date,
+                    y = avg_rating,
+                    color = country_of_bean_origin)) +
+  geom_line(alpha = 0.1) +
+  geom_line(
+    data = q1_viz1 |>
+      filter(country_of_bean_origin == "Dominican Republic"),
+    color = color_scheme[1],
+    linewidth = 1.4
+  ) +
+  geom_point(alpha = 0.1) +
+  geom_point(
+    data = q1_viz1 |>
+      filter(country_of_bean_origin == "Dominican Republic"),
+    color = color_scheme[1],
+    size = 2
+  ) +
+  geom_hline(
+    yintercept = median(meds_DR$avg_rating),
+    color = color_scheme[1],
+    linetype = "dashed"
+  ) +
+  scale_x_continuous(breaks = seq(2006, 2021, 5)) +
+  scale_y_continuous(breaks = seq(2.8, 3.6, 0.4)) +
+  scale_color_manual(values = color_scheme) +
+  labs(title = "Dominican Republic",
+       y = "Avg Rating (Out of 4)") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 10),
+    axis.line = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    legend.position = "none",
+    panel.background = element_rect(
+      fill = NA,
+      linewidth = 1,
+      color = "black"
+    )
+  )
+
+q1_EC <- ggplot(q1_viz1,
+                aes(x = review_date,
+                    y = avg_rating,
+                    color = country_of_bean_origin)) +
+  geom_line(alpha = 0.1) +
+  geom_line(
+    data = q1_viz1 |>
+      filter(country_of_bean_origin == "Ecuador"),
+    color = color_scheme[2],
+    linewidth = 1.4
+  ) +
+  geom_point(alpha = 0.1) +
+  geom_point(
+    data = q1_viz1 |>
+      filter(country_of_bean_origin == "Ecuador"),
+    color = color_scheme[2],
+    size = 2
+  ) +
+  geom_hline(
+    yintercept = median(meds_EC$avg_rating),
+    color = color_scheme[2],
+    linetype = "dashed"
+  ) +
+  scale_x_continuous(breaks = seq(2006, 2021, 5)) +
+  scale_y_continuous(breaks = seq(2.8, 3.6, 0.4)) +
+  scale_color_manual(values = color_scheme) +
+  labs(title = "Ecuador") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 10),
+    axis.line = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    legend.position = "none",
+    panel.background = element_rect(
+      fill = NA,
+      linewidth = 1,
+      color = "black"
+    )
+  )
+
+q1_PE <- ggplot(q1_viz1,
+                aes(x = review_date,
+                    y = avg_rating,
+                    color = country_of_bean_origin)) +
+  geom_line(alpha = 0.1) +
+  geom_line(
+    data = q1_viz1 |>
+      filter(country_of_bean_origin == "Peru"),
+    color = color_scheme[3],
+    linewidth = 1.4
+  ) +
+  geom_point(alpha = 0.1) +
+  geom_point(
+    data = q1_viz1 |>
+      filter(country_of_bean_origin == "Peru"),
+    color = color_scheme[3],
+    size = 2
+  ) +
+  geom_hline(
+    yintercept = median(meds_PE$avg_rating),
+    color = color_scheme[3],
+    linetype = "dashed"
+  ) +
+  scale_x_continuous(breaks = seq(2006, 2021, 5)) +
+  scale_y_continuous(breaks = seq(2.8, 3.6, 0.4)) +
+  scale_color_manual(values = color_scheme) +
+  labs(title = "Peru",
+       x = "Review Year") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 10),
+    axis.line = element_blank(),
+    axis.title.x = element_text(hjust = 1.3),
+    axis.title = element_blank(),
+    legend.position = "none",
+    panel.background = element_rect(
+      fill = NA,
+      linewidth = 1,
+      color = "black"
+    )
+  )
+
+q1_VE <- ggplot(q1_viz1,
+                aes(x = review_date,
+                    y = avg_rating,
+                    color = country_of_bean_origin)) +
+  geom_line(alpha = 0.1) +
+  geom_line(
+    data = q1_viz1 |>
+      filter(country_of_bean_origin == "Venezuela"),
+    color = color_scheme[4],
+    linewidth = 1.4
+  ) +
+  geom_point(alpha = 0.1) +
+  geom_point(
+    data = q1_viz1 |>
+      filter(country_of_bean_origin == "Venezuela"),
+    color = color_scheme[4],
+    size = 2
+  ) +
+  geom_hline(
+    yintercept = median(meds_VE$avg_rating),
+    color = color_scheme[4],
+    linetype = "dashed"
+  ) +
+  scale_x_continuous(breaks = seq(2006, 2021, 5)) +
+  scale_y_continuous(breaks = seq(2.8, 3.6, 0.4)) +
+  scale_color_manual(values = color_scheme) +
+  labs(title = "Venezuela") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 10),
+    axis.line = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title = element_blank(),
+    legend.position = "none",
+    panel.background = element_rect(
+      fill = NA,
+      linewidth = 1,
+      color = "black"
+    )
+  )
+
+q1_YLAB <-
+  ggplot(data.frame(l = "Avg Rating (Out of 4)", x = 1, y = 1)) +
+  geom_text(aes(x, y, label = l), angle = 90) +
+  theme_void() +
+  coord_cartesian(clip = "off")
+
+q1_YLAB + (q1_DR + q1_EC + q1_PE + q1_VE) +
+  plot_layout(ncol = 2, widths = c(1, 25)) +
+  plot_annotation(
+    title = "Chocolate Bar Ratings Over Time",
+    subtitle = "By Country of Cocoa Bean Origin",
+    theme = theme(
+      plot.title = element_text(hjust = 0.55,
+                                face = "bold"),
+      plot.subtitle = element_text(hjust = 0.55,
+                                   face = "bold")
+    )
+  )
+
+# Shared y-axis across patchwork plots: https://stackoverflow.com/questions/65291723/merging-two-y-axes-titles-in-patchwork
+```
+
+## Lower Cocoa, Higher Rating {style="text-align: center; color: brown"}
+
+```{r q1-slide6}
+q1_viz2 <- chocolate |>
+  filter(country_of_bean_origin %in%
+           c("Ecuador", "Dominican Republic", "Peru", "Venezuela")) |>
+  mutate(
+    cocoa_percent = as.numeric(gsub("%", "", cocoa_percent)),
+    cocoa_grp = if_else(cocoa_percent <= 70, "\u2264 70%", "> 70%")
+  ) |>
+  group_by(country_of_bean_origin, cocoa_grp) |>
+  mutate(avg_rating = mean(rating)) |>
+  select(country_of_bean_origin, cocoa_grp, avg_rating) |>
+  ungroup() |>
+  distinct()
+
+ggplot(q1_viz2,
+       aes(
+         x = fct_rev(cocoa_grp),
+         y = avg_rating,
+         color = country_of_bean_origin
+       )) +
+  facet_wrap( ~ country_of_bean_origin, ncol = 4) +
+  geom_col(fill = "white") +
+  geom_text(aes(label = round(avg_rating, 2), vjust = -0.5),
+            fontface = "bold") +
+  coord_cartesian(ylim = c(2.8, 3.4)) +
+  labs(
+    title = "Chocolate Bar Ratings By Cocoa Percentage",
+    subtitle = "By Country of Cocoa Bean Origin",
+    x = "Cocoa Percentage",
+    y = "Avg Rating (Out of 4)"
+  ) +
+  scale_color_manual(values = color_scheme) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5,
+                              face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5,
+                                 face = "bold"),
+    strip.text.x = element_text(face = "italic"),
+    panel.border = element_rect(
+      color = "black",
+      fill = NA,
+      size = 1
+    )
+  )
+
+# geom_col data labels: https://stackoverflow.com/questions/49718365/adding-data-labels-above-geom-col-chart-with-ggplot2
+```
+
+# What does the best chocolate contain? {style="text-align: center"}
+
+## Sometimes, Less is More {style="text-align: center; color: brown"}
+
+```{r q2-slide1}
+q2_viz1 <- chocolate |>
+  mutate(
+    num_ingredients = as.numeric(substr(ingredients, 1, 1)),
+    num_ingredients = case_when(
+      num_ingredients <= 2 ~ "\u2264 2 Ingredients",
+      num_ingredients == 3 ~ "3 Ingredients",
+      num_ingredients == 4 ~ "4 Ingredients",
+      num_ingredients >= 5 ~ "\u2265 5 Ingredients"
+    ),
+    num_ingredients = factor(
+      num_ingredients,
+      levels = c("\u2264 2 Ingredients",
+                 "3 Ingredients",
+                 "4 Ingredients",
+                 "\u2265 5 Ingredients")),
+    sweeteners = if_else(
+      grepl("S\\*", chocolate$ingredients),
+      "Sweeteners",
+      "No Sweeteners"
+    )
+  ) |>
+  drop_na(ingredients)
+
+ggplot(q2_viz1, aes(
+  x = rating,
+  y = num_ingredients,
+  fill = factor(after_stat(quantile))
+)) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE,
+    quantiles = 4,
+    quantile_lines = TRUE
+  ) +
+  scale_fill_manual(values = color_scheme) +
+  scale_x_continuous(labels = c("", "★", "★★", "★★★", "★★★★")) +
+  labs(title = "Chocolate Bar Ratings by
+Number of Ingredients",
+       x = "Rating (Out of 4)") +
+  theme_ridges() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.25),
+    axis.title.y = element_blank(),
+    axis.title.x = element_text(hjust = 0.5)
+  )
+```
+
+## All Natural is the Answer {style="text-align: center; color: brown"}
+
+```{r q2-slide2}
+ggplot(q2_viz1, aes(
+  x = rating,
+  y = sweeteners,
+  fill = factor(after_stat(quantile))
+)) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE,
+    quantiles = 4,
+    quantile_lines = TRUE
+  ) +
+  scale_fill_manual(values = c("#eccccc", "#f0e1e1", "#eeeeee", "#d0afaf")) +
+  scale_x_continuous(labels = c("", "★", "★★", "★★★", "★★★★")) +
+  labs(x = "Rating (Out of 4)",
+       title = "Chocolate Bar Ratings by
+Presence of Artificial Sweeteners") +
+  theme_ridges() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.25),
+    axis.title.y = element_blank(),
+    axis.title.x = element_text(hjust = 0.5)
+  )
+```
+
+## Specific Ingredients {style="text-align: center"}
+
+```{r q2-slide3}
+q2_viz2 <- chocolate |>
+  mutate(
+    has_beans = if_else(grepl("B", chocolate$ingredients), 1, 0),
+    has_sugar = if_else(grepl("S$", chocolate$ingredients) |
+        grepl("S,", chocolate$ingredients), 1, 0),
+    has_sweetener = if_else(grepl("S\\*", chocolate$ingredients), 1, 0),
+    has_cocoa_butter = if_else(grepl("C", chocolate$ingredients), 1, 0),
+    has_vanilla = if_else(grepl("V", chocolate$ingredients), 1, 0),
+    has_lecithin = if_else(grepl("L", chocolate$ingredients), 1, 0),
+    has_salt = if_else(grepl("Sa", chocolate$ingredients), 1, 0)
+  ) |>
+  select(rating, review_date, starts_with("has")) |>
+  pivot_longer(cols = starts_with("has"),
+               names_to = "ingredient",
+               values_to = "contains") |>
+  filter(contains == 1) |>
+  mutate(ingredient = substr(ingredient, 5, 20)) |>
+  filter(ingredient != "salt" & ingredient != "sweetener") |>
+  group_by(ingredient, review_date) |>
+  mutate(avg_rating = mean(rating)) |>
+  select(ingredient, review_date, avg_rating) |>
+  ungroup() |>
+  distinct()
+
+ggplot(q2_viz2, aes(x = review_date, y = avg_rating,
+                                color = ingredient)) +
+  geom_line(alpha = 0.1) +
+  geom_line(
+    data = q2_viz2 |>
+      filter(ingredient %in% c("beans", "cocoa_butter", "sugar")),
+    aes(color = ingredient),
+    linewidth = 1.4
+  ) +
+  geom_point(alpha = 0.1) +
+  geom_point(
+    data = q2_viz2 |>
+      filter(ingredient %in% c("beans", "cocoa_butter", "sugar")),
+    aes(color = ingredient),
+    size = 2
+  ) +
+  scale_color_manual(values = c(color_scheme, "#AA0A27")) +
+  scale_x_continuous(breaks = seq(2006, 2021, 5)) +
+  scale_y_continuous(breaks = seq(2.75, 3.75, 0.5)) +
+  labs(subtitle = "Beans, Sugar, and Cocoa Butter",
+       title = "Chocolate Bar Ratings by
+Presence of Ingredient",
+       y = "Avg Rating (Out of 4)",
+       x = "Review Year") +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12, face = "italic"),
+    axis.text = element_text(size = 8),
+  )
+```
+
+##  {style="text-align: center"}
+
+```{r q2-slide4}
+ggplot(q2_viz2, aes(x = review_date, y = avg_rating,
+                                color = ingredient)) +
+  geom_line(alpha = 0.1) +
+  geom_line(
+    data = q2_viz2 |>
+      filter(ingredient %in% c("lecithin", "vanilla")),
+    aes(color = ingredient),
+    linewidth = 1.4
+  ) +
+  geom_point(alpha = 0.1) +
+  geom_point(
+    data = q2_viz2 |>
+      filter(ingredient %in% c("lecithin", "vanilla")),
+    aes(color = ingredient),
+    size = 2
+  ) +
+  scale_color_manual(values = c(color_scheme[3], "#AA0A27",
+                                "gray", "gray", "gray"),
+                     breaks = c("lecithin", "vanilla"),
+                     labels = c("Lecithin", "Vanilla")) +
+  scale_x_continuous(breaks = seq(2006, 2021, 5)) +
+  scale_y_continuous(breaks = seq(2.75, 3.75, 0.5)) +
+  labs(title = "Chocolate Bar Ratings by
+Presence of Ingredient",
+       y = "Avg Rating (Out of 4)",
+       x = "Review Year",
+       color = "Ingredient") +
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12, face = "italic"),
+    axis.text = element_text(size = 8),
+    panel.background = element_rect(color = "black", fill = NA, size = 1)
+  )
+```
